@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Neuromarketing</title>
+<style>
+body {
+  margin: 0;
+  background: #081421;
+  color: #FFFFFF;
+  font-family: Arial, sans-serif;
+}
+main {
+  max-width: 950px;
+  margin: auto;
+  padding: 28px;
+}
+h1 { color: #55E2DF; }
+.card {
+  background: #13263A;
+  border: 1px solid #29465A;
+  border-radius: 16px;
+  padding: 22px;
+  margin-top: 18px;
+}
+canvas {
+  width: 100%;
+  height: 230px;
+  background: #091522;
+  border-radius: 10px;
+}
+button {
+  background: #00A9AA;
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 9px;
+  padding: 13px 20px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+#estado {
+  color: #FFCE73;
+  font-weight: bold;
+}
+small { color: #A6BAC9; }
+</style>
+</head>
+<body>
+<main>
+
+<p>NEUROMARKETING · LABORATORIO VIRTUAL</p>
+
+<h1>Simulador de EEG</h1>
+
+<p>
+Observá una señal cerebral sintética
+antes y durante un estímulo publicitario.
+</p>
+
+<div class="card">
+
+<h2>Registro electroencefalográfico</h2>
+
+<canvas id="grafico" width="850" height="230"></canvas>
+
+<p id="estado">Actividad basal</p>
+
+<button onclick="presentar()">
+  Presentar anuncio
+</button>
+
+<button onclick="reiniciar()">
+  Reiniciar
+</button>
+
+<p>
+<small>
+Simulación didáctica. No representa actividad
+cerebral real ni permite determinar emociones
+o intenciones de compra.
+</small>
+</p>
+
+</div>
+</main>
+
+<script>
+const canvas = document.getElementById("grafico");
+const ctx = canvas.getContext("2d");
+
+let fase = 0;
+let inicio = 0;
+let tiempo = 0;
+
+function presentar() {
+  fase = 1;
+  inicio = performance.now();
+
+  document.getElementById("estado").textContent =
+    "Estímulo publicitario activo";
+}
+
+function reiniciar() {
+  fase = 0;
+  tiempo = 0;
+
+  document.getElementById("estado").textContent =
+    "Actividad basal";
+}
+
+function animar() {
+  tiempo += 0.045;
+
+  if (fase === 1 &&
+      performance.now() - inicio > 6000) {
+    fase = 0;
+
+    document.getElementById("estado").textContent =
+      "Registro posterior al estímulo";
+  }
+
+  ctx.clearRect(0, 0, 850, 230);
+
+  ctx.strokeStyle = "#2B4153";
+
+  for (let y = 35; y < 230; y += 35) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(850, y);
+    ctx.stroke();
+  }
+
+  ctx.beginPath();
+  ctx.strokeStyle = "#57E5DC";
+  ctx.lineWidth = 2;
+
+  for (let x = 0; x < 850; x++) {
+    const t = tiempo + x * 0.015;
+    const nivel = fase === 1 ? 1.5 : 1;
+
+    const y = 115 + nivel * (
+      19 * Math.sin(t * 10) +
+      8 * Math.sin(t * 23) +
+      3 * Math.sin(t * 41)
+    );
+
+    if (x === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  }
+
+  ctx.stroke();
+
+  requestAnimationFrame(animar);
+}
+
+animar();
+</script>
+</body>
+</html>
